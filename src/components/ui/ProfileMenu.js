@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { User } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 const ProfileMenu = () => {
   const pathname = usePathname();
@@ -46,7 +47,7 @@ const ProfileMenu = () => {
               <li>
                 <button
                   onClick={() => [
-                    console.log("Logout"),
+                    signOut({ callbackUrl: "/" }),
                     setIsProfileMenuOpen(false),
                   ]}
                   className='w-full text-left font-bold block px-4 py-2 rounded-lg text-white bg-red-600 hover:bg-red-500 cursor-pointer'>

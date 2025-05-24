@@ -2,6 +2,7 @@ import { Open_Sans } from "next/font/google";
 import "@/styles/globals.css";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
+import SessionWrapper from "@/providers/SessionWrapper";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -17,13 +18,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang='en'>
       <body className={`${openSans.variable} antialiased`}>
-        <header>
-          <Header />
-        </header>
-        <main>{children}</main>
-        <footer>
-          <Footer />
-        </footer>
+        <SessionWrapper>
+          <header>
+            <Header />
+          </header>
+          <main>{children}</main>
+          <footer>
+            <Footer />
+          </footer>
+        </SessionWrapper>
       </body>
     </html>
   );

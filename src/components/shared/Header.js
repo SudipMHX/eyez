@@ -7,8 +7,10 @@ import Logo from "@/assets/logo.png";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProfileMenu from "../ui/ProfileMenu";
+import { useSession } from "next-auth/react";
 
 const Header = () => {
+  const { data: session, status } = useSession();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
@@ -74,17 +76,24 @@ const Header = () => {
                 0
               </div>
             </Link>
-            <ProfileMenu />
-            <Link
-              className='bg-green-500 text-white px-4 font-semibold flex items-center p-2 rounded-lg hover:shadow-lg'
-              href='/login'>
-              Login
-            </Link>
+            {session?.user ? (
+              <>
+                <ProfileMenu />
+              </>
+            ) : (
+              <>
+                <Link
+                  className='bg-green-500 text-white px-4 font-semibold flex items-center p-2 rounded-lg hover:shadow-lg'
+                  href='/auth/login'>
+                  Login
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu */}
           <div className='flex items-center gap-5 md:hidden'>
-            <ProfileMenu />
+            {session?.user && <ProfileMenu />}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label='Toggle menu'>
@@ -133,14 +142,16 @@ const Header = () => {
                     </div>
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    href='/login'
-                    onClick={() => setIsMenuOpen(false)}
-                    className='bg-green-500 text-white px-4 font-semibold flex items-center p-2 rounded-lg hover:shadow-lg'>
-                    Login
-                  </Link>
-                </li>
+                {!session?.user && (
+                  <li>
+                    <Link
+                      href='/auth/login'
+                      onClick={() => setIsMenuOpen(false)}
+                      className='bg-green-500 text-white px-4 font-semibold flex items-center p-2 rounded-lg hover:shadow-lg'>
+                      Login
+                    </Link>
+                  </li>
+                )}
               </ul>
             </motion.div>
           )}
