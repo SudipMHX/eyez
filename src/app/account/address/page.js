@@ -1,9 +1,9 @@
-const AddressPage = () => {
-    return (
-        <section>
-            
-        </section>
-    );
+import ClientAddress from "./ClientAddress";
+
+export const metadata = {
+  title: "Address",
 };
 
-export default AddressPage;
+export default function AddressPage() {
+  return <ClientAddress />;
+}

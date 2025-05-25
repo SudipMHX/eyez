@@ -18,7 +18,8 @@
     "nodemailer": "^6.10.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-player": "^2.16.0"
+    "react-player": "^2.16.0",
+    "sweetalert2": "^11.21.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
