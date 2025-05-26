@@ -1,9 +1,8 @@
-const InfoPage = () => {
-    return (
-        <section>
-            
-        </section>
-    );
-};
+import ClientInfo from "./ClientInfo";
 
-export default InfoPage;
+export const metadata = {
+  title: "Account Settings",
+};
+export default function InfoPage() {
+  return <ClientInfo />;
+}
