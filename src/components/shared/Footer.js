@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -9,8 +10,16 @@ import {
   MapPin,
 } from "lucide-react";
 import Logo from "@/assets/logo.png";
+import { usePathname } from "next/navigation";
 
 const Footer = () => {
+  const pathname = usePathname();
+  const isDashboard = pathname.startsWith("/dashboard");
+
+  if (isDashboard) {
+    return;
+  }
+
   return (
     <div className='bg-gray-100 text-gray-700'>
       <div className='container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-8'>

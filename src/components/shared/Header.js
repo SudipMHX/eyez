@@ -12,6 +12,8 @@ import { useSession } from "next-auth/react";
 const Header = () => {
   const { data: session, status } = useSession();
   const pathname = usePathname();
+  const isDashboard = pathname.startsWith("/dashboard");
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -32,6 +34,10 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
+
+  if (isDashboard) {
+    return;
+  }
 
   return (
     <>
