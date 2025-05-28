@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Lock, Mail, AlertCircle, ShieldUser } from "lucide-react";
 import Link from "next/link";
@@ -12,6 +12,9 @@ const ClientLogin = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const redirect = searchParams.get("redirect") || "/";
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -34,12 +37,13 @@ const ClientLogin = () => {
       redirect: false,
       email,
       password,
+      redirect,
     });
 
     if (result?.error) {
       setError(result.error);
     } else {
-      router.push("/");
+      router.push(result.url || redirect);
     }
   };
 
@@ -105,7 +109,7 @@ const ClientLogin = () => {
                 <Mail className='absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400' />
                 <input
                   type='email'
-                  name="email"
+                  name='email'
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className='w-full pl-10 pr-3 py-3 rounded-lg ring ring-blue-400 focus:ring-2 focus:ring-blue-500 outline-none'
@@ -123,7 +127,7 @@ const ClientLogin = () => {
                 <Lock className='absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400' />
                 <input
                   type='password'
-                  name="password"
+                  name='password'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className='w-full pl-10 pr-3 py-3 rounded-lg ring ring-blue-400 focus:ring-2 focus:ring-blue-500 outline-none'
