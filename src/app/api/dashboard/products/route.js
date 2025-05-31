@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongoose";
 import Product from "@/models/Product";
+import Category from "@/models/Category"; 
 import { authorizeUser } from "@/lib/authorize";
 
 export async function POST(request) {
@@ -94,7 +95,11 @@ export async function GET(request) {
     const products = await Product.find(query)
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .populate("category")
+      .select(
+        "-seo -dimensions -description -tags -videos -variants -__v -slug -weight -shortDescription"
+      );;
 
     const totalProducts = await Product.countDocuments(query);
 

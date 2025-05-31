@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Swal from "sweetalert2";
-import Image from "next/image"; 
+import Image from "next/image";
 
 import sunglass from "@/assets/sunglasses/01.jpg";
 
@@ -353,7 +353,7 @@ const ProductsClient = () => {
                     </span>
                   </td>
                   <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
-                    {product.category}
+                    {product.category.name}
                   </td>
                   <td className='px-6 py-4 whitespace-nowrap'>
                     {product.isPublished ? (

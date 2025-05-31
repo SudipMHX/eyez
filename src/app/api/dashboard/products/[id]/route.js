@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongoose";
 import Product from "@/models/Product";
+import Category from "@/models/Category";
 
 import mongoose from "mongoose";
 import { authorizeUser } from "@/lib/authorize";
@@ -25,7 +26,7 @@ export async function GET(request, { params }) {
 
   try {
     await dbConnect();
-    const product = await Product.findById(id);
+    const product = await Product.findById(id).populate("category");
 
     if (!product) {
       return NextResponse.json(

@@ -45,9 +45,9 @@ const productSchema = new mongoose.Schema(
       },
     },
     category: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
       required: [true, "Product category is required"],
-      trim: true,
     },
     brand: {
       type: String,
@@ -73,6 +73,11 @@ const productSchema = new mongoose.Schema(
       required: [true, "Stock quantity is required"],
       min: [0, "Stock cannot be negative"],
       default: 0,
+    },
+    stockStatus: {
+      type: String,
+      enum: ["In Stock", "Pre Order", "Up Coming"],
+      default: "In Stock",
     },
     sku: {
       // Stock Keeping Unit
@@ -132,6 +137,18 @@ productSchema.pre("save", function (next) {
   }
   next();
 });
+
+productSchema.pre("save", function (next) {
+  if (this.stock > 5) {
+    this.stockStatus = "In Stock";
+  } else if (this.stock > 0 && this.stock <= 5) {
+    this.stockStatus = "Pre Order";
+  } else {
+    this.stockStatus = "Up Coming";
+  }
+  next();
+});
+
 
 export default mongoose.models.Product ||
   mongoose.model("Product", productSchema);

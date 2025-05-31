@@ -348,7 +348,7 @@ const EditProductClient = ({ productId }) => {
                 type='text'
                 name='category'
                 id='category'
-                value={productData.category}
+                value={productData.category.name}
                 onChange={handleChange}
                 className={inputClass}
                 required
