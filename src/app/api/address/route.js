@@ -1,13 +1,36 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import dbConnect from "@/lib/mongoose";
 import Address from "@/models/Address";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   await dbConnect();
   const data = await req.json();
+  const { name, email, number, address, city, zipcode, region, country } = data;
+
+  const payload = {
+    userId: session.user.id,
+    name,
+    email,
+    number,
+    address,
+    city,
+    zipcode,
+    region,
+    country,
+  };
 
   try {
-    const newAddress = await Address.create(data);
+    const newAddress = await Address.create(payload);
     return NextResponse.json({ success: true, address: newAddress });
   } catch (error) {
     return NextResponse.json(
@@ -18,9 +41,16 @@ export async function POST(req) {
 }
 
 export async function GET(req) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
   await dbConnect();
 
-  const userId = req.nextUrl.searchParams.get("userId");
+  const userId = session.user.id;
   if (!userId)
     return NextResponse.json(
       { success: false, error: "Missing userId" },
@@ -39,10 +69,33 @@ export async function GET(req) {
 }
 
 export async function PUT(req) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   await dbConnect();
   const data = await req.json();
+  const { _id, name, email, number, address, city, zipcode, region, country } =
+    data;
 
-  if (!data._id) {
+  const payload = {
+    userId: session.user.id,
+    _id,
+    name,
+    email,
+    number,
+    address,
+    city,
+    zipcode,
+    region,
+    country,
+  };
+
+  if (!session.user.id) {
     return NextResponse.json(
       { success: false, error: "Missing address ID" },
       { status: 400 }
@@ -50,7 +103,7 @@ export async function PUT(req) {
   }
 
   try {
-    const updated = await Address.findByIdAndUpdate(data._id, data, {
+    const updated = await Address.findByIdAndUpdate(_id, payload, {
       new: true,
     });
     return NextResponse.json({ success: true, address: updated });
