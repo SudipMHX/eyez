@@ -4,7 +4,6 @@ import dbConnect from "@/lib/mongoose";
 import { NextResponse } from "next/server";
 
 import Order from "@/models/Order";
-import Address from "@/models/Address";
 import Product from "@/models/Product";
 import PaymentInfo from "@/models/PaymentInfo";
 import User from "@/models/User";
@@ -21,10 +20,13 @@ export async function GET(req) {
   await dbConnect();
 
   try {
-    const orders = await Order.find({ userId: session.user._id })
-      .populate("items.productId")
-      .populate("Address")
-      .populate("PaymentInfo")
+    const orders = await Order.find({ userId: session.user.id })
+      .populate({
+        path: "items.productId",
+        select: "name slug price brand images sku",
+      })
+      .populate("paymentInfo")
+      .select("-__v")
       .sort({ createdAt: -1 });
 
     return NextResponse.json({ success: true, orders });
@@ -49,7 +51,7 @@ export async function POST(req) {
   const body = await req.json();
 
   try {
-    const { userId, items, totalAmount, shippingAddress } = body;
+    const { userId, items, totalAmount, shippingAddress, shippingFee } = body;
 
     if (userId !== session.user.id) {
       return NextResponse.json(
@@ -67,6 +69,7 @@ export async function POST(req) {
       items,
       totalAmount,
       shippingAddress,
+      shippingFee,
     });
 
     return NextResponse.json({ success: true, order });
@@ -91,11 +94,11 @@ export async function PUT(req) {
   const body = await req.json();
 
   try {
-    const { orderId, status } = body;
+    const { orderId, paymentInfo } = body;
 
     const updatedOrder = await Order.findOneAndUpdate(
-      { _id: orderId, userId: session.user._id },
-      { status },
+      { _id: orderId, userId: session.user.id },
+      { paymentInfo },
       { new: true }
     );
 

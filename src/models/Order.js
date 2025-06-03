@@ -1,3 +1,4 @@
+import { number } from "framer-motion";
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
@@ -12,6 +13,10 @@ const orderItemSchema = new Schema(
       type: Number,
       required: true,
       min: [1, "Quantity cannot be less than 1."],
+    },
+    variant: {
+      color: String,
+      size: String,
     },
     unitPrice: {
       type: Number,
@@ -64,9 +69,19 @@ const orderSchema = new Schema(
     },
     items: [orderItemSchema],
     shippingAddress: {
-      type: Schema.Types.ObjectId,
-      ref: "Address", // Reference to your 'Address' model
-      required: [true, "Shipping address is required."],
+      name: String,
+      email: String,
+      number: String,
+      address: String,
+      city: String,
+      zipcode: String,
+      region: String,
+      country: String,
+    },
+    shippingFee: {
+      type: Number,
+      required: [true, ""],
+      min: [0, "Shipping fee amount cannot be negative"],
     },
   },
   {

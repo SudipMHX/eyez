@@ -56,7 +56,6 @@ const paymentInfoSchema = new mongoose.Schema(
       trim: true,
       index: true,
       unique: true,
-      sparse: true,
     },
     paymentDate: {
       type: Date,
