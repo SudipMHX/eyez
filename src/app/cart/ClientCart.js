@@ -2,29 +2,18 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
-import { Trash2, TicketPercent, ScanBarcode, ArrowLeft } from "lucide-react";
+import {
+  Trash2,
+  TicketPercent,
+  ScanBarcode,
+  ArrowLeft,
+  Minus,
+  Plus,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
-
-const sampleCartItems = [
-  {
-    id: 1,
-    name: "Sun Glasses",
-    model: "FORGE",
-    price: 1450,
-    quantity: 2,
-    image: "/images/01.jpg",
-  },
-  {
-    id: 2,
-    name: "Eye Glass",
-    model: "Ray Ban RB2132",
-    price: 1450,
-    quantity: 1,
-    image: "/images/01.jpg",
-  },
-];
+import { useCart } from "@/hooks/useCart";
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -33,15 +22,23 @@ const itemVariants = {
 };
 
 const ClientCart = () => {
-  const [cartItems, setCartItems] = useState(sampleCartItems);
+  const { cartItems, removeFromCart, clearCart, updateQuantity } = useCart();
+
   const [isCouponOpen, setIsCouponOpen] = useState(false);
   const [isVoucherOpen, setIsVoucherOpen] = useState(false);
 
-  const removeItem = (id) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
+  const removeItem = (productId, variant) => {
+    removeFromCart(productId, variant);
+  };
+  const newQuantity = (productId, variant, quantity) => {
+    updateQuantity(productId, variant, quantity);
   };
 
-  const deliveryFee = 60;
+  const calculateSubtotal = () =>
+    cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
+  const calculateTotalAmount = () => calculateSubtotal();
+
+  const deliveryFee = 120;
   const subTotal = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
@@ -68,7 +65,7 @@ const ClientCart = () => {
           <AnimatePresence mode='popLayout'>
             {cartItems.map((item) => (
               <motion.div
-                key={item.id}
+                key={item.productId}
                 layout
                 variants={itemVariants}
                 initial='hidden'
@@ -81,7 +78,7 @@ const ClientCart = () => {
                     className='relative w-32 h-32 rounded-lg overflow-hidden'>
                     <Image
                       fill
-                      src={item.image}
+                      src={item.productImage.src}
                       alt={item.name}
                       className='object-cover'
                     />
@@ -90,13 +87,13 @@ const ClientCart = () => {
 
                 <div className='flex-1 space-y-3'>
                   <h3 className='text-xl font-semibold text-gray-800'>
-                    {item.name}
+                    {item.productName}
                   </h3>
                   <p className='text-sm text-gray-500'>{item.model}</p>
                   <div className='flex items-center justify-between gap-4 flex-wrap'>
                     <div className='space-x-2'>
                       <span className='text-lg font-medium text-blue-600'>
-                        {item.price}৳
+                        {item.unitPrice}Tk
                       </span>
                       <span className='text-gray-400'>×</span>
                       <span className='text-gray-600'>{item.quantity}</span>
@@ -105,46 +102,32 @@ const ClientCart = () => {
                       <div className='flex items-center gap-2'>
                         <button
                           onClick={() =>
-                            setCartItems((prev) =>
-                              prev.map((cartItem) =>
-                                cartItem.id === item.id && item.quantity > 1
-                                  ? {
-                                      ...cartItem,
-                                      quantity: cartItem.quantity - 1,
-                                    }
-                                  : cartItem
-                              )
+                            newQuantity(
+                              item.productId,
+                              item.variant,
+                              item.quantity - 1
                             )
                           }
-                          className='px-2 py-1 bg-gray-200 rounded-full hover:bg-gray-300 transition'>
-                          -
+                          className='p-1 bg-gray-200 rounded-full hover:bg-gray-300 transition cursor-pointer'>
+                          <Minus size={20} />
                         </button>
-                        <input
-                          type='number'
-                          min='1'
-                          value={item.quantity}
-                          readOnly
-                          className='w-10 rounded-full py-1 px-2 text-center focus:ring-2 focus:ring-blue-500 outline-none bg-white'
-                        />
+                        <div className='w-10 font-semibold text-lg rounded-full py-1 px-2 text-center focus:ring-2 focus:ring-blue-500 outline-none bg-white'>
+                          {item.quantity}
+                        </div>
                         <button
                           onClick={() =>
-                            setCartItems((prev) =>
-                              prev.map((cartItem) =>
-                                cartItem.id === item.id
-                                  ? {
-                                      ...cartItem,
-                                      quantity: cartItem.quantity + 1,
-                                    }
-                                  : cartItem
-                              )
+                            newQuantity(
+                              item.productId,
+                              item.variant,
+                              item.quantity + 1
                             )
                           }
-                          className='px-2 py-1 bg-gray-200 rounded-full hover:bg-gray-300 transition'>
-                          +
+                          className='p-1 bg-gray-200 rounded-full hover:bg-gray-300 transition cursor-pointer'>
+                          <Plus size={20} />
                         </button>
                       </div>
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(item.productId, item.variant)}
                         className='p-2 bg-red-500 text-white hover:bg-red-600 rounded-full transition-colors cursor-pointer'>
                         <Trash2 className='w-5 h-5' />
                       </button>
@@ -238,11 +221,13 @@ const ClientCart = () => {
             <div className='space-y-4'>
               <div className='flex justify-between items-center'>
                 <span className='text-gray-300'>Subtotal:</span>
-                <span className='text-xl font-bold'>{subTotal}৳</span>
+                <span className='text-xl font-bold'>
+                  {calculateSubtotal()} Tk
+                </span>
               </div>
               <div className='flex justify-between items-center'>
                 <span className='text-gray-300'>Delivery:</span>
-                <span className='text-xl font-bold'>{deliveryFee}৳</span>
+                <span className='text-xl font-bold'>{deliveryFee} Tk</span>
               </div>
               <div className='pt-4 border-t border-gray-700'>
                 <div className='flex justify-between items-center'>
@@ -252,7 +237,7 @@ const ClientCart = () => {
                     initial={{ scale: 1.2 }}
                     animate={{ scale: 1 }}
                     className='text-2xl font-bold text-green-400'>
-                    {total}৳
+                    {calculateTotalAmount() + deliveryFee} Tk
                   </motion.span>
                 </div>
               </div>

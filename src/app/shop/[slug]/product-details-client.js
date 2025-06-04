@@ -1,18 +1,17 @@
-"use client"; // Still needed if you're using App Router and this is a Client Component
-
+"use client";
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
-// If using App Router and this is a Client Component, you'd get params differently,
-// e.g., `const params = useParams(); const id = params.id;`
-// but for Pages Router, useRouter is correct.
-import Head from "next/head";
-import ReactPlayer from "react-player/lazy"; // Lazy load for better performance
-import Breadcrumbs from "@/components/ui/Breadcrumbs"; // Assuming this component exists
+import ReactPlayer from "react-player/lazy";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useCart } from "@/hooks/useCart";
+import Swal from "sweetalert2";
 
 const ProductDetailsClient = ({ productData }) => {
-  const { slug } = useParams();
+  const router = useRouter();
+
+  const { addToCart } = useCart();
 
   const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
   const [showLightbox, setShowLightbox] = useState(false);
@@ -23,7 +22,6 @@ const ProductDetailsClient = ({ productData }) => {
   const [currentVariant, setCurrentVariant] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(0);
 
-  // Memoize media items based on productData
   const mediaItems = useMemo(() => {
     if (!productData) return [];
     const videos =
@@ -60,7 +58,6 @@ const ProductDetailsClient = ({ productData }) => {
     }
   }, [selectedColor, selectedSize, productData]);
 
-  // Derive available colors and sizes from variants
   const availableColors = useMemo(() => {
     if (!productData || !productData.variants) return [];
     return [...new Set(productData.variants.map((v) => v.color))];
@@ -73,7 +70,6 @@ const ProductDetailsClient = ({ productData }) => {
       .map((v) => v.size);
   }, [productData, selectedColor]);
 
-  // Effect to auto-select a valid size when color changes
   useEffect(() => {
     if (selectedColor && availableSizesForSelectedColor.length > 0) {
       if (!availableSizesForSelectedColor.includes(selectedSize)) {
@@ -93,6 +89,44 @@ const ProductDetailsClient = ({ productData }) => {
   const isCurrentVariantOutOfStock = currentVariant
     ? currentVariant.stock <= 0
     : productData.stock <= 0;
+
+  const handleAddToCart = () => {
+    if (currentPrice === 0) {
+      return Swal.fire({
+        title: "Please select",
+        text: "color and size before adding to cart.",
+        timer: 1800,
+        showConfirmButton: false,
+        icon: "info",
+      });
+    }
+
+    addToCart({
+      productId: productData?._id,
+      productName: productData?.name,
+      productImage: productData?.images[0],
+      unitPrice: currentPrice,
+      variant: {
+        color: selectedColor,
+        size: selectedSize,
+      },
+    });
+  };
+  const handleBuy = () => {
+    if (currentPrice === 0) {
+      return Swal.fire({
+        title: "Please select",
+        text: "color and size before adding to cart.",
+        timer: 1800,
+        showConfirmButton: false,
+        icon: "info",
+      });
+    }
+
+    handleAddToCart();
+    router.push("/checkout");
+  };
+
   return (
     <>
       <div className='p-6 max-w-7xl mx-auto'>
@@ -318,6 +352,7 @@ const ProductDetailsClient = ({ productData }) => {
             {/* Action Buttons */}
             <div className='flex flex-col sm:flex-row gap-3 mt-6'>
               <button
+                onClick={handleAddToCart}
                 disabled={isCurrentVariantOutOfStock}
                 className={`w-full sm:w-auto flex-grow bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
                 // Add onClick handler for adding to cart
@@ -325,6 +360,7 @@ const ProductDetailsClient = ({ productData }) => {
                 Add to Cart
               </button>
               <button
+                onClick={handleBuy}
                 disabled={isCurrentVariantOutOfStock}
                 className={`w-full sm:w-auto flex-grow bg-green-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50`}
                 // Add onClick handler for buy now
@@ -379,8 +415,8 @@ const ProductDetailsClient = ({ productData }) => {
               {productData.tags.map((tag) => (
                 <div
                   key={tag}
-                //   href={`/shop/tags/${tag.toLowerCase().replace(/\s+/g, "-")}`}
-                  >
+                  //   href={`/shop/tags/${tag.toLowerCase().replace(/\s+/g, "-")}`}
+                >
                   <span className='text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full transition-colors'>
                     {tag}
                   </span>
