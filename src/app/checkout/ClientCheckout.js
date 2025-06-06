@@ -37,33 +37,6 @@ const ClientCheckout = () => {
 
   const { cartItems, removeFromCart, clearCart } = useCart();
 
-  // --- Mock Cart Data & Totals ---
-  // const [cartItems, setCartItems] = useState([
-  //   {
-  //     productId: "683a81b2fdebd63dd35655bf", // Example ObjectId string
-  //     productName: "Sun Glasses",
-  //     productImage: "https://via.placeholder.com/150/92c952", // Placeholder image
-  //     quantity: 1,
-  //     unitPrice: 1450,
-  //     totalPrice: 1450,
-  //     variant: {
-  //       color: "White",
-  //       size: "XL",
-  //     },
-  //   },
-  //   {
-  //     productId: "683a81b2fdebd63dd35655c0", // Example ObjectId string
-  //     productName: "Cool T-Shirt",
-  //     productImage: "https://via.placeholder.com/150/771796", // Placeholder image
-  //     quantity: 2,
-  //     unitPrice: 750,
-  //     totalPrice: 1500,
-  //     variant: {
-  //       color: "Black",
-  //       size: "L",
-  //     },
-  //   },
-  // ]);
   const [shippingCost, setShippingCost] = useState(120);
 
   const calculateSubtotal = () =>
@@ -220,7 +193,7 @@ const ClientCheckout = () => {
           let paymentPayload = {
             orderId: orderId,
             userId: session.user.id,
-            amount: calculateTotalAmount(),
+            amount: calculateTotalAmount() + shippingCost,
             currency: "BDT", // Default from schema
           };
 
@@ -292,7 +265,9 @@ const ClientCheckout = () => {
 
           Swal.fire({
             title: "Order Placed!",
-            text: `Thank you! Your order has been successfully placed. Your order ID is ${orderId}.`,
+            text: `Thank you! Your order has been successfully placed. Your order ID is ${orderId.slice(
+              -8
+            )}.`,
             icon: "success",
             timer: 2000,
             showConfirmButton: false,
