@@ -46,7 +46,7 @@ const ClientAddress = () => {
     const method = _id ? "PUT" : "POST";
 
     try {
-      const res = await fetch("/api/address", {
+      const res = await fetch("/api/user/address", {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -85,16 +85,14 @@ const ClientAddress = () => {
 
   useEffect(() => {
     const fetchAddress = async () => {
-      if (status === "authenticated" && session?.user?.id) {
-        try {
-          const res = await fetch(`/api/address?userId=${session.user.id}`);
-          const data = await res.json();
-          setIsLoading(false);
-          setAddressData(data?.data);
-        } catch (err) {
-          setIsLoading(false);
-          console.error("Failed to fetch address:", err);
-        }
+      try {
+        const res = await fetch(`/api/user/address`);
+        const data = await res.json();
+        setIsLoading(false);
+        setAddressData(data?.data);
+      } catch (err) {
+        setIsLoading(false);
+        console.error("Failed to fetch address:", err);
       }
     };
 

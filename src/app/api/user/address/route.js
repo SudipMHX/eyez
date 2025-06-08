@@ -17,6 +17,10 @@ export async function POST(req) {
   const data = await req.json();
   const { name, email, number, address, city, zipcode, region, country } = data;
 
+  console.log(data)
+  console.log(session.user.id)
+  console.log(session.user)
+
   const payload = {
     userId: session.user.id,
     name,

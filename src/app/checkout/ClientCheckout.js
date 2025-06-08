@@ -60,7 +60,7 @@ const ClientCheckout = () => {
 
       setIsLoadingAddress(true);
       try {
-        const res = await fetch(`/api/user/address?userId=${session.user.id}`);
+        const res = await fetch(`/api/user/address`);
         const result = await res.json(); // Ensure this line is present
         if (result.success && result.data) {
           setAddressData(result.data);
@@ -274,8 +274,8 @@ const ClientCheckout = () => {
           });
 
           // 3. Save address if not saved by user
-          if (!addressData) {
-            const res = await fetch("/api/user/address", {
+          if (Object.keys(addressData).length === 0) {
+            await fetch("/api/user/address", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(shippingData),

@@ -1,4 +1,5 @@
 import "@/styles/loading-animations.css";
+import { Loader } from "lucide-react";
 
 export const SpinnerLoader = () => (
   <div className='flex items-center justify-center w-full h-full'>
@@ -21,6 +22,15 @@ export const BarsLoader = () => (
     <div className='w-1.5 h-6 bg-blue-500 animate-[barPulse_1.2s_ease-in-out_infinite_0.8s]'></div>
   </div>
 );
+
+export const DashboardLoading = () => {
+  return (
+    <div className='flex justify-center items-center h-screen bg-gray-50 text-gray-800'>
+      <Loader className='animate-spin mr-4' size={48} />
+      <p className='text-xl'>Loading Data...</p>
+    </div>
+  );
+};
 
 export const FullscreenLoadingScreen = () => (
   <section className='fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-gray-900'>
