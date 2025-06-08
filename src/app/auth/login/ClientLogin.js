@@ -37,7 +37,7 @@ const ClientLogin = () => {
       redirect: false,
       email,
       password,
-      redirect,
+      callbackUrl: redirect,
     });
 
     if (result?.error) {
