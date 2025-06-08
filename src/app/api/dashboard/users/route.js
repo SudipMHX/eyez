@@ -60,7 +60,9 @@ export async function GET(req) {
       },
     ]);
 
-    return NextResponse.json(users, { status: 200 });
+    const loadMore = (await User.countDocuments()) !== users.length;
+
+    return NextResponse.json({ users, loadMore }, { status: 200 });
   } catch (error) {
     console.error("Error fetching users:", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 
 const UsersClient = () => {
   const [users, setUsers] = useState([]);
+  const [loadMore, setLoadMore] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
@@ -143,7 +144,8 @@ const UsersClient = () => {
       }
 
       const data = await res.json();
-      setUsers(data);
+      setUsers(data.users);
+      setLoadMore(data.loadMore);
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -159,7 +161,12 @@ const UsersClient = () => {
 
   return (
     <>
-      <section className='font-mono'>
+      <section>
+        <div className='mb-6'>
+          <h1 className='text-3xl font-bold text-gray-800'>Manage All User</h1>
+          {/* <p className='text-gray-600'>Manage user</p> */}
+        </div>
+
         <div className='bg-white shadow p-3 mb-4 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
           <div className='flex items-center w-full border border-gray-300 rounded-lg'>
             <select
@@ -206,28 +213,37 @@ const UsersClient = () => {
           transition={{ duration: 0.3 }}
           className='w-full overflow-hidden rounded-lg shadow-lg'>
           <div className='w-full overflow-x-auto'>
-            <table className='w-full'>
-              <thead>
-                <tr className='text-md font-semibold tracking-wide text-left text-gray-900 bg-white uppercase border-b border-gray-600'>
-                  <th className='px-4 py-3'>Name</th>
-                  <th className='px-4 py-3'>E-mail</th>
-                  <th className='px-4 py-3'>Role</th>
-                  <th className='px-4 py-3'>Status</th>
-                  <th className='px-4 py-3'>Date</th>
-                  <th className='px-4 py-3'>Actions</th>
+            <table className='w-full font-sans'>
+              <thead className='bg-gray-100'>
+                <tr>
+                  <th className='w-1/5 px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider'>
+                    Name
+                  </th>
+                  <th className='w-1/4 px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider'>
+                    E-mail
+                  </th>
+                  <th className='w-32 px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider'>
+                    Role
+                  </th>
+                  <th className='w-32 px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider'>
+                    Status
+                  </th>
+                  <th className='w-32 px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider'>
+                    Date
+                  </th>
+                  <th className='w-20 px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider'>
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className='bg-white'>
                 {isLoading ? (
                   <>
                     {[...Array(6)].map((number, index) => (
-                      <motion.tr
-                        key={index}
-                        layout
-                        className='text-gray-700 border-b border-gray-200 transition-colors animate-pulse'>
+                      <motion.tr key={index} layout className='animate-pulse'>
                         {[...Array(6)].map((_, i) => (
-                          <td key={i} className='bg-gray-200 p-2'>
-                            <div className='bg-white animate-pulse h-6 p-2 rounded-full' />
+                          <td key={i} className='p-5'>
+                            <div className='h-4 bg-gray-300 rounded w-full'></div>
                           </td>
                         ))}
                       </motion.tr>
@@ -279,7 +295,7 @@ const UsersClient = () => {
                               "en-GB"
                             )}
                           </td>
-                          <td className='px-4 py-3 text-sm'>
+                          <td className='px-4 py-3 text-sm flex justify-center'>
                             <Expand
                               onClick={() => handleOpenModal(user._id)}
                               className='cursor-pointer'
@@ -299,28 +315,25 @@ const UsersClient = () => {
                   </>
                 )}
               </tbody>
-              <tfoot>
-                <tr>
-                  <td colSpan={6}></td>
-                </tr>
-              </tfoot>
             </table>
           </div>
         </motion.div>
         <div className='flex justify-center pt-5'>
-          <button
-            onClick={handleLoadMore}
-            disabled={isFetchingMore || isLoading}
-            className='flex justify-center items-center gap-2 bg-green-500 text-white font-semibold px-4 py-1 rounded-full cursor-pointer'>
-            {isFetchingMore || isLoading ? (
-              <>
-                Loading...
-                <Loader2 className='animate-spin' />
-              </>
-            ) : (
-              "Load More"
-            )}
-          </button>
+          {loadMore && (
+            <button
+              onClick={handleLoadMore}
+              disabled={isFetchingMore || isLoading}
+              className='flex justify-center items-center gap-2 bg-green-500 text-white font-semibold px-4 py-1 rounded-full cursor-pointer'>
+              {isFetchingMore || isLoading ? (
+                <>
+                  Loading...
+                  <Loader2 className='animate-spin' />
+                </>
+              ) : (
+                "Load More"
+              )}
+            </button>
+          )}
         </div>
       </section>
 

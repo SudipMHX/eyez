@@ -20,7 +20,7 @@ const menuItems = [
   { name: "Analytics", icon: BarChart2, path: "/dashboard/analytics" },
   { name: "Products", icon: Package, path: "/dashboard/products" },
   { name: "Orders", icon: ListTodo, path: "/dashboard/orders" },
-  { name: "Payment", icon: CreditCard, path: "/dashboard/transaction" },
+  { name: "Payment", icon: CreditCard, path: "/dashboard/transactions" },
   { name: "Users", icon: Users, path: "/dashboard/users" },
   { name: "Settings", icon: Settings, path: "/dashboard/settings" },
 ];
