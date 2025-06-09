@@ -35,7 +35,7 @@ export default function Modal({ isOpen, onClose, children }) {
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.25 }}>
             <div
-              className='bg-white rounded-2xl shadow-xl p-6 w-full max-w-md relative'
+              className='bg-white rounded-2xl shadow-xl p-6 w-full max-w-2xl relative'
               onClick={(e) => e.stopPropagation()} // Prevent backdrop close
             >
               {children}

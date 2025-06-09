@@ -1,9 +1,11 @@
+import OrderHistoryClient from "./order-history-client";
+
+export const metadata = {
+  title: "Order History",
+};
+
 const OrderHistoryPage = () => {
-    return (
-        <section>
-            
-        </section>
-    );
+  return <OrderHistoryClient />;
 };
 
 export default OrderHistoryPage;
