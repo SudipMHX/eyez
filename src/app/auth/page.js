@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import ClientLogin from "./login/ClientLogin";
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function AuthPage() {
-  return <ClientLogin />;
+  return (
+    <Suspense>
+      <ClientLogin />
+    </Suspense>
+  );
 }

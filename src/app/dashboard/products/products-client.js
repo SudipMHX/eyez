@@ -119,18 +119,18 @@ const ProductsClient = () => {
     fetchProducts();
   };
 
-  const handleFilterChange = () => {
+  const handleFilterChange = useCallback(() => {
     setCurrentPage(1);
     fetchProducts();
-  };
-
+  }, [fetchProducts]);
+  
   useEffect(() => {
     // Debounce effect for filters
     const debounceTimer = setTimeout(() => {
       if (!isLoading) handleFilterChange();
     }, 500); // Adjust debounce time as needed
     return () => clearTimeout(debounceTimer);
-  }, [categoryFilter, brandFilter, stockStatusFilter, publishedStatusFilter]);
+  }, [categoryFilter, brandFilter, stockStatusFilter, publishedStatusFilter, isLoading, handleFilterChange]);
 
   const Pagination = () => {
     if (totalPages <= 1) return null;

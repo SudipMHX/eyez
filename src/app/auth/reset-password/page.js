@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import ClientResetPassword from "./ClientResetPassword";
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function ResetPasswordPage() {
-  return <ClientResetPassword />;
+  return (
+    <Suspense>
+      <ClientResetPassword />
+    </Suspense>
+  );
 }
